@@ -12,6 +12,7 @@ using System.Web.Mvc;
 
 namespace PPG.Web.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class AccountController : Controller
     {
@@ -149,7 +150,21 @@ namespace PPG.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser 
+                { 
+                    // First and Last Name
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    // Address
+                    AddressLine1 = model.AddressLine1,
+                    AddressLine2 = model.AddressLine2,
+                    City = model.City,
+                    State = model.State,
+                    PostalCode = model.PostalCode,
+                    // Username and Email
+                    UserName = model.Email,
+                    Email = model.Email 
+                };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

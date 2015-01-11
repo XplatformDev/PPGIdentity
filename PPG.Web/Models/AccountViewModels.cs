@@ -61,6 +61,41 @@ namespace PPG.Web.Models
 
     public class RegisterViewModel
     {
+        // Add First and Last Name Properties
+        [Required]
+        [Display(Name = "First Name")]
+        [StringLength(30)]
+        public string FirstName { get; set; }
+        [Required]
+        [Display(Name = "Last Name")]
+        [StringLength(45)]
+        public string LastName { get; set; }
+
+        // Add Address Properties
+        [Required]
+        [Display(Name = "Address Line 1")]
+        [StringLength(100)]
+        public string AddressLine1 { get; set; }
+
+        [Display(Name = "Address Line 2")]
+        [StringLength(100)]
+        public string AddressLine2 { get; set; }
+
+        [Required]
+        [Display(Name = "City")]
+        [StringLength(100)]
+        public string City { get; set; }
+
+        [Required]
+        [Display(Name = "State")]
+        [StringLength(2)]
+        public string State { get; set; }
+
+        [Required]
+        [Display(Name = "Zip Code")]
+        [StringLength(100)]
+        public string PostalCode { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

@@ -13,6 +13,7 @@ using System.Web.Mvc;
 
 namespace PPG.Web.Controllers
 {
+    [RequireHttps]
     [Authorize(Roles = "Admin")]
     public class UsersAdminController : Controller
     {
@@ -90,7 +91,33 @@ namespace PPG.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = userViewModel.Email, Email = userViewModel.Email };
+                var user = new ApplicationUser 
+                { 
+                    // First and Last Name
+                    FirstName = userViewModel.FirstName,
+                    LastName = userViewModel.LastName,
+                    // Address
+                    AddressLine1 = userViewModel.AddressLine1,
+                    AddressLine2 = userViewModel.AddressLine2,
+                    City = userViewModel.City,
+                    State = userViewModel.State,
+                    PostalCode = userViewModel.PostalCode,
+                    // Username and Email
+                    UserName = userViewModel.Email,
+                    Email = userViewModel.Email
+                };
+
+                // Add First and Last Name Info:
+                user.FirstName = userViewModel.FirstName;
+                user.LastName = userViewModel.LastName;
+                // Add Address Info:
+                user.AddressLine1 = userViewModel.AddressLine1;
+                user.AddressLine2 = userViewModel.AddressLine2;
+                user.City = userViewModel.City;
+                user.State = userViewModel.State;
+                user.PostalCode = userViewModel.PostalCode;
+                
+                // Then Create User:
                 var adminresult = await UserManager.CreateAsync(user, userViewModel.Password);
 
                 //Add User to the selected Roles 
@@ -138,6 +165,15 @@ namespace PPG.Web.Controllers
 
             return View(new EditUserViewModel()
             {
+                // First and Last Name
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                // Address Info
+                AddressLine1 = user.AddressLine1,
+                AddressLine2 = user.AddressLine2,
+                City = user.City,
+                State = user.State,
+                PostalCode = user.PostalCode,
                 Id = user.Id,
                 Email = user.Email,
                 RolesList = RoleManager.Roles.ToList().Select(x => new SelectListItem()
@@ -153,7 +189,9 @@ namespace PPG.Web.Controllers
         // POST: /Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Email,Id")] EditUserViewModel editUser, params string[] selectedRole)
+        public async Task<ActionResult> Edit([Bind(Include = 
+            "Email,Id,FirstName,LastName,City,State,PostalCode")] 
+            EditUserViewModel editUser, params string[] selectedRole)
         {
             if (ModelState.IsValid)
             {
@@ -162,7 +200,13 @@ namespace PPG.Web.Controllers
                 {
                     return HttpNotFound();
                 }
-
+                user.FirstName = editUser.FirstName;
+                user.LastName = editUser.LastName;
+                user.AddressLine1 = editUser.AddressLine1;
+                user.AddressLine2 = editUser.AddressLine2;
+                user.City = editUser.City;
+                user.State = editUser.State;
+                user.PostalCode = editUser.PostalCode;
                 user.UserName = editUser.Email;
                 user.Email = editUser.Email;
 

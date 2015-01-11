@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace PPG.Web.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class ManageController : Controller
     {

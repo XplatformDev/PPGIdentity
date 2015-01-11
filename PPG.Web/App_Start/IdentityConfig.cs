@@ -10,8 +10,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Web;
+using PPG.Web.Models;
 
-namespace PPG.Web.Models
+namespace PPG.Web
 {
     // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
 
@@ -69,16 +70,16 @@ namespace PPG.Web.Models
     }
 
     // Configure the RoleManager used in the application. RoleManager is defined in the ASP.NET Identity core assembly
-    public class ApplicationRoleManager : RoleManager<IdentityRole>
+    public class ApplicationRoleManager : RoleManager<ApplicationRole>
     {
-        public ApplicationRoleManager(IRoleStore<IdentityRole,string> roleStore)
+        public ApplicationRoleManager(IRoleStore<ApplicationRole,string> roleStore)
             : base(roleStore)
         {
         }
 
         public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
         {
-            return new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<ApplicationDbContext>()));
+            return new ApplicationRoleManager(new RoleStore<ApplicationRole>(context.Get<ApplicationDbContext>()));
         }
     }
 
@@ -117,17 +118,33 @@ namespace PPG.Web.Models
             const string name = "admin@example.com";
             const string password = "Admin@123456";
             const string roleName = "Admin";
+            const string firstName = "Global";
+            const string lastName = "Admin";
+            const string addressLine1 = "123 Anywhere St";
+            const string city = "Anywhere";
+            const string state = "IN";
+            const string postalCode = "12345";
 
             //Create Role Admin if it does not exist
             var role = roleManager.FindByName(roleName);
             if (role == null) {
-                role = new IdentityRole(roleName);
+                role = new ApplicationRole(roleName);
                 var roleresult = roleManager.Create(role);
             }
 
             var user = userManager.FindByName(name);
             if (user == null) {
-                user = new ApplicationUser { UserName = name, Email = name };
+                user = new ApplicationUser 
+                { 
+                    UserName = name, 
+                    Email = name,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    AddressLine1 = addressLine1,
+                    City = city,
+                    State = state,
+                    PostalCode = postalCode
+                };
                 var result = userManager.Create(user, password);
                 result = userManager.SetLockoutEnabled(user.Id, false);
             }
@@ -135,6 +152,55 @@ namespace PPG.Web.Models
             // Add user admin to Role Admin if not already added
             var rolesForUser = userManager.GetRoles(user.Id);
             if (!rolesForUser.Contains(role.Name)) {
+                var result = userManager.AddToRole(user.Id, role.Name);
+            }
+        }
+
+        //Create User=HRAdmin@Admin.com with password=HRAdmin@123456 in the HR Admin role        
+        public static void InitializeIdentityForHR(ApplicationDbContext db)
+        {
+            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var roleManager = HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
+            const string name = "hradmin@example.com";
+            const string password = "HRAdmin@123456";
+            const string roleName = " HR Admin";
+            const string firstName = "Melissa";
+            const string lastName = "McCoy";
+            const string addressLine1 = "8064 Raven Rock Ct";
+            const string city = "Indianapolis";
+            const string state = "IN";
+            const string postalCode = "46256";
+
+            //Create Role Admin if it does not exist
+            var role = roleManager.FindByName(roleName);
+            if (role == null)
+            {
+                role = new ApplicationRole(roleName);
+                var roleresult = roleManager.Create(role);
+            }
+
+            var user = userManager.FindByName(name);
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = name,
+                    Email = name,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    AddressLine1 = addressLine1,
+                    City = city,
+                    State = state,
+                    PostalCode = postalCode
+                };
+                var result = userManager.Create(user, password);
+                result = userManager.SetLockoutEnabled(user.Id, false);
+            }
+
+            // Add user admin to Role Admin if not already added
+            var rolesForUser = userManager.GetRoles(user.Id);
+            if (!rolesForUser.Contains(role.Name))
+            {
                 var result = userManager.AddToRole(user.Id, role.Name);
             }
         }
